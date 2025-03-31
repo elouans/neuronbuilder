@@ -1,0 +1,16 @@
+name = "NB"
+uuid = "e17d0ef0-c49e-489d-bc07-242a9ee578a6"
+authors = ["elouans <simonneauelouan@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+
+[compat]
+ModelingToolkit = "9.69.0"
+OrdinaryDiffEq = "6.93.0"
+Plots = "1.40.11"
+TOML = "1.0.3"

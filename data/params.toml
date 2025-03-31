@@ -1,0 +1,16 @@
+eNa = 50.0      # Sodium
+eK = -80.0      # Potassium
+eh = -20.0      # H-current
+eleak = -50.0   # Leak current
+
+gNabar = 100.0     # Sodium
+gCaSbar = 3.0      # Slow calcium
+gCaTbar = 1.3      # Transient calcium
+gKabar = 5.0       # A-type potassium
+gKCabar = 10.0     # Calcium-activated potassium
+gKdrbar = 20.0     # Delayed rectifier potassium
+ghbar = 0.5        # H-current
+gleak = 0.01    # Leak
+
+tauCa = 20.0               # Calcium time constant
+Ca = 0.05         # Base calcium concentration
