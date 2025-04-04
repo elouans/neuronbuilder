@@ -9,7 +9,7 @@ using ..utils
 export CalciumDynamics
 
 @component function CalciumDynamics(;name, v_in)
-    @named pin = Pin()
+    @named pin = Pinwithothername()
 
     pars = @parameters begin
         tau_Ca = 20.0 
@@ -33,7 +33,7 @@ export CalciumDynamics
     return ODESystem(eqs, t, vars, pars; systems=[pin], name=name)
 end
 
-@connector Pin begin
+@connector Pinwithothername begin
     v(t)
     i(t), [connect = Flow]
 end
