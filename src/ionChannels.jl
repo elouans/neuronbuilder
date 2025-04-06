@@ -1,16 +1,4 @@
-module ionChannels
-
-using ModelingToolkit
-using ModelingToolkit: t_nounits as t, D_nounits as D
-using ModelingToolkit: get_eqs
-using OrdinaryDiffEq
-
-export BaseStaticIonChannel, BaseDynamicIonChannel, HHSodiumChannel, SlowCalciumChannel, TransientCalciumChannel, DelayedRectifierPotassiumChannel, CalciumActivatedPotassiumChannel, ATypePotassiumChannel, HCurrentChannel, LeakChannel
-
-@connector Pin begin
-    v(t)
-    i(t), [connect = Flow]
-end
+include("utils.jl")
 
 @component function BaseStaticIonChannel(;name, v_in, conductance, reversal_potential, kwargs...)
     @parameters t
@@ -55,11 +43,6 @@ end
     ]
 
     return ODESystem(eqs, t, vars, pars; systems=[pin, reversalPin], name=name)
-end
-
-@connector Pin begin
-    v(t)
-    i(t), [connect = Flow]
 end
 
 #In theory setting up this way abstracts some of the annoyances of replicating boiler-plate code.
@@ -168,8 +151,8 @@ end
     
     eqs = [
         local_ICA ~ pin.i
-        connect(pin.i, ca_dynamics.pin)
-        m_inf ~ (local_ICA / (local_ICA + 3.0)) / (1.0 + exp((v + 28.3) / -12.6))
+        connect(pin, ca_dynamics.pin)
+        m_inf ~ (local_ICA / (local_ICA + 3.0)) / (1.0 + exp((v_in + 28.3) / -12.6))
         D(base.m) ~ (m_inf - base.m) / tau_m(v_in)
         base.i ~ base.g * base.m * (base.E - v_in)
     ]
@@ -219,6 +202,4 @@ end
     ]
     
     return ODESystem(eqs, t, [base.m, base.h, base.i], [base.g, base.E]; systems=[base], name=name)
-end
-
 end

@@ -1,0 +1,7 @@
+name = "script"
+uuid = "40b0087c-df02-4f5d-b0be-ee9110aa40e0"
+authors = ["elouans <simonneauelouan@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+MTKNeuralComponents = "e17d0ef0-c49e-489d-bc07-242a9ee578a6"

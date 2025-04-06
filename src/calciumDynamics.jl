@@ -1,15 +1,8 @@
-module calciumDynamics
 
-using ModelingToolkit
-using ModelingToolkit: t_nounits as t, D_nounits as D
-using ModelingToolkit: get_eqs
-using OrdinaryDiffEq
-using ..utils
-
-export CalciumDynamics
+include("utils.jl")
 
 @component function CalciumDynamics(;name, v_in)
-    @named pin = Pinwithothername()
+    @named pin = Pin()
 
     pars = @parameters begin
         tau_Ca = 20.0 
@@ -33,8 +26,3 @@ export CalciumDynamics
     return ODESystem(eqs, t, vars, pars; systems=[pin], name=name)
 end
 
-@connector Pinwithothername begin
-    v(t)
-    i(t), [connect = Flow]
-end
-end

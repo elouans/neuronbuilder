@@ -1,4 +1,4 @@
-name = "NB"
+name = "MTKNeuralComponents"
 uuid = "e17d0ef0-c49e-489d-bc07-242a9ee578a6"
 authors = ["elouans <simonneauelouan@gmail.com>"]
 version = "0.1.0"
