@@ -1,0 +1,4 @@
+Short markdown to write my thoughts on lifespans and namespaces within the project.
+There will be components repeated many times throughout this project: ion channels, synapses, or calcium dynamics and pins. The lifespan of each of these will be done as bio-realistically as possible; an ion channel is nothing without a neuron membrane to hold it, which is nothing without a neuron. Therefore subcomponents of larger components will always be compartmentalized to their supercomponent. Exceptions to this include synapses, which will live at the network level, and other similar components.
+
+0704, struggling with single Ca-HHNeuron *sad*.

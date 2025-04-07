@@ -19,6 +19,6 @@ function dostuff()
 
     prob = ODEProblem(Neurone, [], (0.0, 20))
     sol = solve(prob, Tsit5())
-    print(ln("Something polite"))
+    println("Something polite")
 end
 end

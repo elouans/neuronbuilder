@@ -28,7 +28,7 @@ end
     end
 
     @named pin = Pin()
-    @named reversalPin = Pin()
+    #@named reversalPin = Pin()
 
     vars = @variables begin
         E(t), [input=true]
@@ -39,10 +39,10 @@ end
 
     eqs = [
         pin.i ~ i,
-        reversalPin.v ~ E
+        pin.v ~ E
     ]
 
-    return ODESystem(eqs, t, vars, pars; systems=[pin, reversalPin], name=name)
+    return ODESystem(eqs, t, vars, pars; systems=[pin], name=name)
 end
 
 #In theory setting up this way abstracts some of the annoyances of replicating boiler-plate code.
@@ -85,7 +85,7 @@ end
         base.pin.i ~ base.g * base.m^2 * (base.E - v_in),
         
         connect(base.pin, ca_dynamics.pin),
-        connect(ca_dynamics.pin, base.reversalPin)
+        connect(ca_dynamics.pin, base.pin)
     ]
     
     return ODESystem(eqs, t, [base.m, base.h, base.i, base.E], [base.g]; systems=[base], name=name)
@@ -108,7 +108,7 @@ end
         base.pin.i ~ base.g * base.m^3 * base.h * (base.E - v_in),
         
         connect(base.pin, ca_dynamics.pin),
-        connect(ca_dynamics.pin, base.reversalPin)
+        connect(ca_dynamics.pin, base.pin)
     ]
     
     return ODESystem(eqs, t, [base.m, base.h, base.i, base.E], [base.g]; systems=[base], name=name)
@@ -137,7 +137,6 @@ end
 @component function CalciumActivatedPotassiumChannel(;name, v_in, conductance=10.0, reversal_potential=-80.0, ca_dynamics, kwargs...)
     @parameters t
 
-
     vars = @variables begin
         local_ICA(t), [output=true],
         m_inf(t)
@@ -150,10 +149,10 @@ end
     tau_m(v) = 90.3 - 75.1 / (1.0 + exp((v + 46.0) / -22.7))
     
     eqs = [
-        local_ICA ~ pin.i
-        connect(pin, ca_dynamics.pin)
-        m_inf ~ (local_ICA / (local_ICA + 3.0)) / (1.0 + exp((v_in + 28.3) / -12.6))
-        D(base.m) ~ (m_inf - base.m) / tau_m(v_in)
+        local_ICA ~ pin.i,
+        connect(pin, ca_dynamics.pin),
+        m_inf ~ (local_ICA / (local_ICA + 3.0)) / (1.0 + exp((v_in + 28.3) / -12.6)),
+        D(base.m) ~ (m_inf - base.m) / tau_m(v_in),
         base.i ~ base.g * base.m * (base.E - v_in)
     ]
     
