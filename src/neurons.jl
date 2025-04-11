@@ -32,6 +32,7 @@ include("ionChannels.jl")
     #Simplify, sum all channels' intensities
     eqs = [
         C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current
+        cadynamics.ica = sum(flux.systems)
         #C * D(v) ~ na.base.i+ ka.base.i + kdr.base.i + h.base.i + leak.base.i + input_current
         #ca_dynamics.I_Ca ~ cas.I_Ca + cat.I_Ca + kca.pin.i
         #C * D(v) ~ cat.base.i + input_current
@@ -40,6 +41,14 @@ include("ionChannels.jl")
     ]
     return ODESystem(eqs, t, vars, pars; systems=systems, name=name)
 end
+
+function flux(channel)
+    if channel.base isa BaseDynamicIonChannel
+        return channel.I_Ca
+    end
+    return 0
+end
+
 #Add IonChannelFactory: registers instances of dynamicionchannel to an array at the neuron level, neuron sums it,
 #Feeds that straight into it's CalciumDynamics
 #Also removes the need manually write summing equation per neuron.

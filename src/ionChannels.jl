@@ -38,7 +38,6 @@ end
     end
 
     eqs = [
-        pin.i ~ i,
         pin.v ~ E
     ]
 
@@ -79,12 +78,12 @@ end
     
     m_inf(v) = 1.0 / (1.0 + exp((v + 33.0) / -8.1))
     tau_m(v) = 1.4 + 7.0 / (exp((v + 27.0) / 10.0) + exp((v + 70.0) / -13.0))
+    I_Ca = 0.0
     
     eqs = [
         D(base.m) ~ (m_inf(v_in) - base.m) / tau_m(v_in),
-        base.pin.i ~ base.g * base.m^2 * (base.E - v_in),
+        I_Ca ~ base.g * base.m^2 * (base.E - v_in),
         
-        connect(base.pin, ca_dynamics.pin),
         connect(ca_dynamics.pin, base.pin)
     ]
     
@@ -101,13 +100,13 @@ end
     h_inf(v) = 1.0 / (1.0 + exp((v + 78.0) / 5.0))
     tau_m(v) = 0.44 + 0.15 / (exp((v + 35.0) / 52.0) + exp((v + 35.0) / -50.0))
     tau_h(v) = 22.7 + 0.27 / (exp((v + 55.0) / 7.0) + exp((v + 55.0) / -7.0))
+    I_Ca = 0.0
     
     eqs = [
         D(base.m) ~ (m_inf(v_in) - base.m) / tau_m(v_in),
         D(base.h) ~ (h_inf(v_in) - base.h) / tau_h(v_in),
-        base.pin.i ~ base.g * base.m^3 * base.h * (base.E - v_in),
+        I_Ca ~ base.g * base.m^3 * base.h * (base.E - v_in),
         
-        connect(base.pin, ca_dynamics.pin),
         connect(ca_dynamics.pin, base.pin)
     ]
     
