@@ -4,7 +4,7 @@ using ModelingToolkit
 using ModelingToolkit: t_nounits as t, D_nounits as D
 using ModelingToolkit: get_eqs
 using OrdinaryDiffEq
-using MTKNeuralComponents: HHNeuron
+using MTKNeuralComponents: NaKaNeuron
 using Plots
 
 export minimal_HH
