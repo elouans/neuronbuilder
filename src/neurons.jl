@@ -1,6 +1,29 @@
 include("calciumDynamics.jl")
 include("ionChannels.jl")
 
+@component function NaKaNeuron(;name, input_current=0.0, kwargs...)
+
+    pars = @parameters begin
+        C = 0.01
+    end
+
+    vars = @variables begin
+        v(t) = -70
+    end
+
+    systems = @named begin
+        na = HHSodiumChannel(v_in=v)
+        ka = ATypePotassiumChannel(v_in=v)
+    end
+
+    eqs = [
+        C * D(V) ~ na.base.i + ka.base.i
+    ]
+
+    return ODESystem(eqs, t, vars, pars; systems=systems, name=name)
+end
+
+
 @component function HHNeuron(;name, input_current=0.0, kwargs...)
 
     pars = @parameters begin
@@ -31,8 +54,8 @@ include("ionChannels.jl")
     #push!(systems, ca_dynamics)
     #Simplify, sum all channels' intensities
     eqs = [
-        C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current
-        cadynamics.ica = sum(flux.systems)
+        C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current,
+        cadynamics.ica ~ sum(flux.systems)
         #C * D(v) ~ na.base.i+ ka.base.i + kdr.base.i + h.base.i + leak.base.i + input_current
         #ca_dynamics.I_Ca ~ cas.I_Ca + cat.I_Ca + kca.pin.i
         #C * D(v) ~ cat.base.i + input_current

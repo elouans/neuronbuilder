@@ -1,5 +1,4 @@
-
-include("utils.jl")
+#include("utils.jl")
 
 @component function CalciumDynamics(;name, v_in)
     @named pin = Pin()

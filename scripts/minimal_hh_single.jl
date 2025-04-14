@@ -1,5 +1,4 @@
-module full_hh_single
-
+module minimal_hh_single
 
 using ModelingToolkit
 using ModelingToolkit: t_nounits as t, D_nounits as D
@@ -8,13 +7,12 @@ using OrdinaryDiffEq
 using MTKNeuralComponents: HHNeuron
 using Plots
 
-export full_HH
+export minimal_HH
 
-test() = print("Hello World!")
-function full_HH()
-    Neurone = HHNeuron(name=:neur)
-    println(size(ModelingToolkit.unknowns(Neurone)))
-    println(Neurone.discrete_subsystems)
+test() = println("Test")
+
+function minimal_HH()
+    Neurone = NaKaNeuron()
     Neurone = structural_simplify(Neurone)
 
     prob = ODEProblem(Neurone, [], (0.0, 20))

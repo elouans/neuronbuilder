@@ -1,4 +1,4 @@
-include("utils.jl")
+#include("utils.jl")
 
 @component function BaseStaticIonChannel(;name, v_in, conductance, reversal_potential, kwargs...)
     @parameters t
