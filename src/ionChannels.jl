@@ -1,6 +1,6 @@
 #include("utils.jl")
 
-@component function BaseStaticIonChannel(;name, v_in, conductance, reversal_potential, kwargs...)
+@component function BaseStaticIonChannel(;name, v_in, conductance, reversal_potential, parent=nothing, kwargs...)
     @parameters t
     pars = @parameters begin
         g = conductance
@@ -21,14 +21,12 @@
     return ODESystem(eqs, t, vars, pars; systems=[], name=name)
 end
 
-@component function BaseDynamicIonChannel(;name, v_in, conductance, kwargs...)
+@component function BaseDynamicIonChannel(;name, v_in, conductance, parent, kwargs...)
     @parameters t
     pars = @parameters begin
         g = conductance
     end
 
-    @named pin = Pin()
-    #@named reversalPin = Pin()
 
     vars = @variables begin
         E(t), [input=true]
@@ -38,7 +36,7 @@ end
     end
 
     eqs = [
-        pin.v ~ E
+        E := parent.ca_dynamics.E_Ca
     ]
 
     return ODESystem(eqs, t, vars, pars; systems=[pin], name=name)
@@ -50,10 +48,10 @@ end
 #Changeable through Global params.
 
 # 0. Sodium Channel
-@component function HHSodiumChannel(;name, v_in, conductance=100.0, reversal_potential=50.0, kwargs...)
+@component function HHSodiumChannel(;name, v_in, conductance=100.0, reversal_potential=50.0, parent=nothing, kwargs...)
     @parameters t
     
-    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential)
+    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential, parent=parent)
 
     # Activation and inactivation functions
     m_inf(v) = 1.0 / (1.0 + exp((v + 25.5) / -5.29))
@@ -71,10 +69,10 @@ end
 end
 
 # 1. Slow Calcium Channel
-@component function SlowCalciumChannel(;name, v_in, conductance=3.0, ca_dynamics, kwargs...)
+@component function SlowCalciumChannel(;name, v_in, conductance=3.0, parent, kwargs...)
     @parameters t
     
-    @named base = BaseDynamicIonChannel(v_in=v_in, conductance=conductance)
+    @named base = BaseDynamicIonChannel(v_in=v_in, conductance=conductance, parent=parent)
     
     m_inf(v) = 1.0 / (1.0 + exp((v + 33.0) / -8.1))
     tau_m(v) = 1.4 + 7.0 / (exp((v + 27.0) / 10.0) + exp((v + 70.0) / -13.0))
@@ -83,18 +81,16 @@ end
     eqs = [
         D(base.m) ~ (m_inf(v_in) - base.m) / tau_m(v_in),
         I_Ca ~ base.g * base.m^2 * (base.E - v_in),
-        
-        connect(ca_dynamics.pin, base.pin)
     ]
     
     return ODESystem(eqs, t, [base.m, base.h, base.i, base.E], [base.g]; systems=[base], name=name)
 end
 
 # 2. Transient Calcium Channel
-@component function TransientCalciumChannel(;name, v_in, conductance=1.3, ca_dynamics, kwargs...)
+@component function TransientCalciumChannel(;name, v_in, conductance=1.3, parent, kwargs...)
     @parameters t
 
-    @named base = BaseDynamicIonChannel(v_in=v_in, conductance=conductance)
+    @named base = BaseDynamicIonChannel(v_in=v_in, conductance=conductance, parent=parent)
     
     m_inf(v) = 1.0 / (1.0 + exp((v + 50.0) / -7.4))
     h_inf(v) = 1.0 / (1.0 + exp((v + 78.0) / 5.0))
@@ -106,17 +102,15 @@ end
         D(base.m) ~ (m_inf(v_in) - base.m) / tau_m(v_in),
         D(base.h) ~ (h_inf(v_in) - base.h) / tau_h(v_in),
         I_Ca ~ base.g * base.m^3 * base.h * (base.E - v_in),
-        
-        connect(ca_dynamics.pin, base.pin)
     ]
     
     return ODESystem(eqs, t, [base.m, base.h, base.i, base.E], [base.g]; systems=[base], name=name)
 end
 
 # 3. A-type Potassium Channel
-@component function ATypePotassiumChannel(;name, v_in, conductance=5.0, reversal_potential=-80.0, kwargs...)
+@component function ATypePotassiumChannel(;name, v_in, conductance=5.0, reversal_potential=-80.0, parent=nothing, kwargs...)
     @parameters t
-    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential)
+    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential, parent=parent)
     
     m_inf(v) = 1.0 / (1.0 + exp((v + 60.0) / -8.5))
     h_inf(v) = 1.0 / (1.0 + exp((v + 78.0) / 6.0))
@@ -133,24 +127,20 @@ end
 end
 
 # 4. Calcium-activated Potassium Channel
-@component function CalciumActivatedPotassiumChannel(;name, v_in, conductance=10.0, reversal_potential=-80.0, ca_dynamics, kwargs...)
+@component function CalciumActivatedPotassiumChannel(;name, v_in, conductance=10.0, reversal_potential=-80.0, parent, kwargs...)
     @parameters t
 
     vars = @variables begin
-        local_Ca(t) = 0.0, [output=true, connect=Flow]
         m_inf(t)
     end
     @named pin = Pin()
 
-    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential)
+    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential, parent=parent, )
     
-    #m_inf(v, ca_dynamics.I_Ca) = (ca_dynamics.I_Ca / (ca_dynamics.I_Ca + 3.0)) / (1.0 + exp((v + 28.3) / -12.6))
     tau_m(v) = 90.3 - 75.1 / (1.0 + exp((v + 46.0) / -22.7))
     
     eqs = [
-        pin.i ~ local_Ca,
-        connect(pin.i, ca_dynamics.pin.i),
-        m_inf ~ (local_Ca/ (local_Ca + 3.0)) / (1.0 + exp((v_in + 28.3) / -12.6)),
+        m_inf ~ (parent.ca_dynamics.Ca/ (parent.ca_dynamics.Ca + 3.0)) / (1.0 + exp((v_in + 28.3) / -12.6)),
         D(base.m) ~ (m_inf - base.m) / tau_m(v_in),
         base.i ~ base.g * base.m * (base.E - v_in)
     ]
@@ -159,9 +149,9 @@ end
 end
 
 # 5. Delayed Rectifier Potassium Channel
-@component function DelayedRectifierPotassiumChannel(;name, v_in, conductance=20.0, reversal_potential=-80.0, kwargs...)
+@component function DelayedRectifierPotassiumChannel(;name, v_in, conductance=20.0, reversal_potential=-80.0, parent=nothing, kwargs...)
     @parameters t
-    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential)
+    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential, parent=parent)
     
     m_inf(v) = 1.0 / (1.0 + exp((v + 12.3) / -11.8))
     tau_m(v) = 7.2 - 6.4 / (1.0 + exp((v + 28.3) / -19.2))
@@ -175,9 +165,9 @@ end
 end
 
 # 6. H-Current Channel
-@component function HCurrentChannel(;name, v_in, conductance=0.5, reversal_potential=-20.0, kwargs...)
+@component function HCurrentChannel(;name, v_in, conductance=0.5, reversal_potential=-20.0, parent=nothing, kwargs...)
     @parameters t
-    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential)
+    @named base = BaseStaticIonChannel(v_in=v_in, conductance=conductance, reversal_potential=reversal_potential, parent=parent)
     
     m_inf(v) = 1.0 / (1.0 + exp((v + 75.0) / 5.5))
     tau_m(v) = 2.0 / (exp((v + 169.7) / 11.6) + exp((v - 26.7) / -14.3))

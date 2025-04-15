@@ -2,7 +2,6 @@ module utils
 
 export load_params, get_unique_name
 
-using TOML
 
 const NAME_DICT = Dict{DataType, Int}()
 function get_unique_name(obj)

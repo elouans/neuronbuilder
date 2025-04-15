@@ -5,13 +5,6 @@ include("full_hh_single.jl")
 
 greet() = print("Hello World!")
 
-
-function something()
-    println("BBBB")
-    full_HH()
-    println("BBefefBB")
-end
-
 function check_files()
     println("Current directory: ", pwd())
     println("Does full_hh_single.jl exist? ", isfile("full_hh_single.jl"))

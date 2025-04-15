@@ -9,6 +9,7 @@ include("utils.jl")
 
 include("neurons.jl")
 
-export HHNeuron, NaKaNeuron
+
+export HHNeuron, full_HH, minimal_HH, NaKaNeuron
 
 end 
