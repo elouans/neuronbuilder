@@ -12,6 +12,7 @@ export full_HH
 
 test() = print("Hello World!")
 function full_HH()
+    @parameters t
     Neurone = HHNeuron(name=:neur)
     println(size(ModelingToolkit.unknowns(Neurone)))
     println(Neurone.discrete_subsystems)

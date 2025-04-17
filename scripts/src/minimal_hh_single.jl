@@ -12,7 +12,7 @@ export minimal_HH
 test() = println("Test")
 
 function minimal_HH()
-    Neurone = NaKaNeuron()
+    Neurone = NaKaNeuron(name=:neur)
     Neurone = structural_simplify(Neurone)
 
     prob = ODEProblem(Neurone, [], (0.0, 20))
