@@ -12,8 +12,8 @@ include("ionChannels.jl")
     end
 
     systems = @named begin
-        na = HHSodiumChannel(v_in=v)
-        ka = ATypePotassiumChannel(v_in=v)
+        na = HHSodiumChannel(v_in=v, parent=nothing)
+        ka = ATypePotassiumChannel(v_in=v, parent=nothing)
     end
 
     eqs = [
@@ -52,12 +52,10 @@ end
     push!(systems, ca_dynamics)
     #Simplify, sum all channels' intensities
     eqs = [
+        #C * D(v) ~ kca.base.i + input_current
         C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current,
         #C * D(v) ~ cat.base.i + cas.base.i + kca.base.i + input_current,
-        ca_dynamics.I_Ca ~ cat.base.i + cas.base.i
-        #cas.ca_dynamics.E_Ca ~ ca_dynamics.E_Ca,
-        #cat.ca_dynamics.E_Ca ~ ca_dynamics.E_Ca
-        #kca.parent.E_Ca ~ ca_dynamics.E_Ca
+        ca_dynamics.I_Ca ~ cas.base.i + cat.base.i
     ]
     return ODESystem(eqs, t, vars, pars; systems=systems, name=name)
 end

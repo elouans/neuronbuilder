@@ -66,7 +66,6 @@ end
 # 1. Slow Calcium Channel
 @component function SlowCalciumChannel(;name, v_in, conductance=3.0, parent, kwargs...)
     @named base = BaseDynamicIonChannel(v_in=v_in, conductance=conductance, parent=parent)
-    
     m_inf(v) = 1.0 / (1.0 + exp((v + 33.0) / -8.1))
     tau_m(v) = 1.4 + 7.0 / (exp((v + 27.0) / 10.0) + exp((v + 70.0) / -13.0))
     
@@ -81,7 +80,6 @@ end
 # 2. Transient Calcium Channel
 @component function TransientCalciumChannel(;name, v_in, conductance=1.3, parent, kwargs...)
     @named base = BaseDynamicIonChannel(v_in=v_in, conductance=conductance, parent=parent)
-    
     m_inf(v) = 1.0 / (1.0 + exp((v + 50.0) / -7.4))
     h_inf(v) = 1.0 / (1.0 + exp((v + 78.0) / 5.0))
     tau_m(v) = 0.44 + 0.15 / (exp((v + 35.0) / 52.0) + exp((v + 35.0) / -50.0))
