@@ -10,17 +10,18 @@ using Plots
 
 export full_HH
 
-test() = print("Hello World!")
-function full_HH(input_current=10.0, plotting=true)
+function full_HH(input_current=10.0, plotting=false)
     println(input_current)
     @parameters t
     Neurone = HHNeuron(name=:neur, input_current=input_current)
-    println(size(ModelingToolkit.unknowns(Neurone)))
-    println(Neurone.discrete_subsystems)
     Neurone = structural_simplify(Neurone)
 
-    prob = ODEProblem(Neurone, [], (0.0, 40))
+    prob = ODEProblem(Neurone, [], (0.0, 4000))
     sol = solve(prob, Tsit5())
+
+    println("First few timepoints: ", sol.t[1:5])
+    println("First few voltage values: ", sol[Neurone.v][1:5])
+
     println("Something polite")
     if plotting
         println("Jean Plot Van Debugamme")
@@ -33,7 +34,7 @@ function full_HH(input_current=10.0, plotting=true)
             ylabel="Voltage (mV)",
             linewidth=2,
             title="Membrane Potential")
-
+        
         # Plot all currents on bottom panel
         plot!(p[2], sol, vars=[Neurone.na.base.i, Neurone.cas.base.i, Neurone.cat.base.i, 
                             Neurone.ka.base.i, Neurone.kca.base.i, Neurone.leak.base.i], 
@@ -43,8 +44,8 @@ function full_HH(input_current=10.0, plotting=true)
             linewidth=2,
             title="Ionic Currents")
 
-        plot!(p[3], sol, vars=[Neurone.ca_dynamics.I_Ca, Neurone.ca_dynamics.E_Ca, Neurone.ca_dynamics.Ca], 
-        label=["ICA" "ECA" "Ca"], 
+        plot!(p[3], sol, vars=[Neurone.ca_dynamics.E_Ca, Neurone.ca_dynamics.Ca], 
+        label=["ECA" "Ca"], 
         xlabel="Time (ms)", 
         ylabel="Current",
         linewidth=2,

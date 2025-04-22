@@ -53,16 +53,16 @@ end
     #Simplify, sum all channels' intensities
     eqs = [
         #C * D(v) ~ kca.base.i + input_current
-        C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current,
+        C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current + 1,
         #C * D(v) ~ cat.base.i + cas.base.i + kca.base.i + input_current,
-        ca_dynamics.I_Ca ~ cas.base.i + cat.base.i
+        D(ca_dynamics.Ca) ~ (1/ca_dynamics.tau_Ca) * (ca_dynamics.Ca_base + 0.94*(cas.base.i + cat.base.i) - ca_dynamics.Ca)
     ]
     return ODESystem(eqs, t, vars, pars; systems=systems, name=name)
 end
 
 function flux(channel)
 
-    
+
     if hasproperty(channel, :I_Ca)
         return channel.I_Ca
     end
