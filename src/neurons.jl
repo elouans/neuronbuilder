@@ -61,6 +61,8 @@ end
 end
 
 function flux(channel)
+
+    
     if hasproperty(channel, :I_Ca)
         return channel.I_Ca
     end
