@@ -46,23 +46,22 @@ end
         kca = CalciumActivatedPotassiumChannel(v_in=v, parent=ca_dynamics.Ca)
         kdr = DelayedRectifierPotassiumChannel(v_in=v, conductance=20.0, reversal_potential=-80.0, parent=ca_dynamics)
         h = HCurrentChannel(v_in=v, conductance=0.5, reversal_potential=-20.0, parent=ca_dynamics)
-        leak = LeakChannel(v_in=v, conductance=0.01, reversal_potential=-50.0, parent=ca_dynamics)
+        #leak = LeakChannel(v_in=v, conductance=0.01, reversal_potential=-50.0, parent=ca_dynamics)
     end
     
     push!(systems, ca_dynamics)
-    #Simplify, sum all channels' intensities
     eqs = [
-        #C * D(v) ~ kca.base.i + input_current
-        C * D(v) ~ na.base.i + cas.base.i + cat.base.i + ka.base.i  + kca.base.i + kdr.base.i + h.base.i + leak.base.i + input_current + 1,
-        #C * D(v) ~ cat.base.i + cas.base.i + kca.base.i + input_current,
+        C * D(v) ~ summ_channels(systems) + input_current,
         D(ca_dynamics.Ca) ~ (1/ca_dynamics.tau_Ca) * (ca_dynamics.Ca_base + 0.94*(cas.base.i + cat.base.i) - ca_dynamics.Ca)
     ]
     return ODESystem(eqs, t, vars, pars; systems=systems, name=name)
 end
 
+function summ_channels(systems)
+    summ = sum(entity.base.i for entity in systems if hasproperty(entity, :base))
+    return summ
+end
 function flux(channel)
-
-
     if hasproperty(channel, :I_Ca)
         return channel.I_Ca
     end
