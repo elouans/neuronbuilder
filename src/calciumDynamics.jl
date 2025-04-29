@@ -6,11 +6,12 @@
     
     vars = @variables begin
         Ca(t) = 0.05
-        E_Ca(t)
+        E_Ca(t), [input=true]
     end
-    
+
+    E_Ca ~ (500.0) * (8.6174e-5) * (283.15) * log(max((3000.0 / Ca),0.001))
     eqs = [
-        E_Ca ~ (500.0) * (8.6174e-5) * (283.15) * log((3000.0 / Ca))
+        0~0
     ]
     
     return ODESystem(eqs, t, vars, pars; systems=[], name=name)

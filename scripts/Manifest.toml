@@ -2,7 +2,7 @@
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "50216206c5800bfd97caafe7c8453f7aeea1cd2d"
+project_hash = "790bc83f416392bea887ce778dc41b5eddf341ac"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -1208,7 +1208,7 @@ uuid = "d8e11817-5142-5d16-987a-aa16d5891078"
 version = "0.4.17"
 
 [[deps.MTKNeuralComponents]]
-deps = ["ModelingToolkit", "OrdinaryDiffEq", "Plots", "Revise", "TOML"]
+deps = ["ModelingToolkit", "ModelingToolkitStandardLibrary", "OrdinaryDiffEq", "Plots", "Revise", "TOML"]
 path = ".."
 uuid = "e17d0ef0-c49e-489d-bc07-242a9ee578a6"
 version = "0.1.0"
@@ -1285,6 +1285,12 @@ version = "9.72.0"
     FMI = "14a09403-18e3-468f-ad8a-74f8dda2d9ac"
     InfiniteOpt = "20393b10-9daf-11e9-18c9-8db751c92c57"
     LabelledArrays = "2ee39098-c373-598a-b85f-a56591580800"
+
+[[deps.ModelingToolkitStandardLibrary]]
+deps = ["ChainRulesCore", "DiffEqBase", "IfElse", "LinearAlgebra", "ModelingToolkit", "PreallocationTools", "Symbolics"]
+git-tree-sha1 = "f53115b28d0c0d2bf51bf14ddb60a0cbf9ee0eaa"
+uuid = "16a59e39-deab-5bd0-87e4-056b12336739"
+version = "2.19.1"
 
 [[deps.Moshi]]
 deps = ["ExproniconLite", "Jieko"]

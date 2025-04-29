@@ -2,6 +2,8 @@ module MTKNeuralComponents
 
 using ModelingToolkit
 using ModelingToolkit: t_nounits as t, D_nounits as D
+using ModelingToolkitStandardLibrary.Blocks: Constant, RealInput
+using ModelingToolkitStandardLibrary.Electrical
 using ModelingToolkit: get_eqs
 using OrdinaryDiffEq
 
